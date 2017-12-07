@@ -1,0 +1,13 @@
+- name: install SSH
+  apt: name=openssh-server update_cache=yes state=latest
+
+- name: ssh modification
+  lineinfile:
+          dest: /etc/ssh/sshd_config
+          regexp: "{{ item.regexp }}"
+          line: "{{ item.line }}"
+  with_items:
+          - { regexp: '^#Port', line: 'Port 22' }
+          - { regexp: '^#PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+  notify:
+          - restart ssh

@@ -1,0 +1,58 @@
+- name: Create Network
+  docker_network:
+          name: InternalNet
+          driver_options:
+                  com.docker.network.bridge.name: net2
+          ipam_options:
+                  subnet: "172.3.26.0/16"
+                  gateway: "172.3.26.1"
+
+- name: Create test container
+  docker_container:
+          name: container_one
+          image: "ubuntu:ssh"
+          state: started
+          detach: True
+          tty: yes
+          interactive: yes
+          restart_policy: on-failure
+          exposed: 22
+          ports:
+              - 22:22
+          command: "/bin/bash"
+          networks:
+                  - name: InternalNet
+                    ipv4_address: "172.3.26.55"
+
+- name: add first cont to network
+  docker_container:
+           name: cont-1
+           image: "ubuntu:ssh"
+           state: started
+           privileged: yes
+           command: "/bin/bash"
+           detach: True
+           tty: yes
+           interactive: yes
+           exposed: 22
+           ports:
+                   - 22:22
+           networks:
+                   - name: InternalNet
+                     ipv4_address: "172.3.26.100"
+
+- name: Create second container & link
+  docker_container:
+          name: container_two
+          image: "ubuntu:ssh"
+          state: present
+          command: "/bin/bash"
+          detach: 1
+          interactive: yes
+          tty: yes
+          exposed: 22
+          networks:
+                  - name: InternalNet
+                    ipv4_address: "172.3.26.80"
+                    links:
+                            - cont-1:main

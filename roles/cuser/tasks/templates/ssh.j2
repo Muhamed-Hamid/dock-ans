@@ -1,0 +1,11 @@
+{% for item in keys_hostname['result'] %}
+   {% for k in item['stdout_lines'] %}
+      {{ k }}
+   {% endfor %}
+{% endfor %}
+
+{% for item in keys_ip['results'] %}
+   {% for k in item['stdout_lines'] %}
+     {{ k }}
+   {% endfor %}
+{% endfor %}

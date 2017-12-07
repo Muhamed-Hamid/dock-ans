@@ -1,0 +1,20 @@
+- name: Creating dock-root
+  user:
+          name: docker-root
+          shell: /bin/bash
+          password: sample123
+          generate_ssh_key: yes
+          ssh_key_bits: 2048
+          ssh_key_file: ./ssh/id_rsa
+
+- name: scan and store keys
+  command: "ssh-keyscan {{ item }}"
+  register: "keys"
+  changed_when: false
+  with_items: "{{ groups.all }}"
+  become: false
+
+- name: copy keys template
+  template:
+          src: "ssh.j2"
+          dest: "/home/docker-root/.ssh/authorized_keys"
